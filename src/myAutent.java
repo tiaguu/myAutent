@@ -101,8 +101,6 @@ public class myAutent {
 		try {
 			ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
 			sSoc = ssf.createServerSocket(23456);
-			
-			//sSoc = new ServerSocket(23456);
 
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -316,8 +314,8 @@ public class myAutent {
 					
 					if (!usedID) {
 						
-							//try {
-								//generateKey(userID, userPw);
+							try {
+								generateKey(userID, userPw);
 								
 								FileWriter myWriter = new FileWriter(System.getProperty("user.dir")+"/bin/files/users.txt", true);
 								
@@ -348,10 +346,10 @@ public class myAutent {
 							    File macFile = new File(System.getProperty("user.dir")+"/bin/files/users.mac");
 							    writeMacFile(macFile);
 							    
-							//} catch (NoSuchAlgorithmException | CertificateException | NoSuchProviderException
-							//		 | KeyStoreException | OperatorException e) {
-							//	System.out.print("Error: Creating user in server – "+ e.getMessage());
-							//}
+							} catch (NoSuchAlgorithmException | CertificateException | NoSuchProviderException
+									 | KeyStoreException | OperatorException e) {
+								System.out.print("Error: Creating user in server – "+ e.getMessage());
+							}
 						
 					}
 					
@@ -902,29 +900,7 @@ public class myAutent {
 			}
 			
 			reader.close();
-		} /* else {
-			Scanner sc2 = new Scanner(System.in);
-			System.out.println("WARNING: There's no MAC protecting users file intergrity!");
-			System.out.println("Do you wish to calculate it? (yes/no)");
-			String rep = sc2.nextLine();
-			boolean writeMac = false;
-			boolean ans = true;
-			while (ans) {
-				if (rep.equals("yes")) {
-					writeMac = true;
-					ans = false;
-				} else if (rep.equals("no")) {
-					ans = false;
-				}
-			}
-			
-			if (writeMac) {
-				this.writeMacFile(mac_file);
-			}
-		} */
-		
-			
-		
+		}
 		
 	}
 	
