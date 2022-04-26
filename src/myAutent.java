@@ -118,8 +118,6 @@ public class myAutent {
 	            directory.mkdir();
 	        }
 	    	if (userFile.createNewFile()) {
-				//FileWriter myWriter = new FileWriter(System.getProperty("user.dir")+"/bin/files/users.txt");
-				//FileOutputStream outFile = new FileOutputStream(userFile);
 				BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(userFile));
 				
 				System.out.println("Insert an admin password:");
@@ -213,6 +211,13 @@ public class myAutent {
 					passwd = (String)in.readObject();
 				} catch (ClassNotFoundException e) {
 					System.out.println("Error: Listening to clients – " + e.getMessage());
+				}
+				
+				try {
+					verifyMacFile();
+				} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException
+						| IllegalStateException | IOException e1) {
+					System.out.println("Error: Verifying MAC file");
 				}
 				
 				String line;
@@ -851,47 +856,75 @@ public class myAutent {
 	
 	private void verifyMacFile() throws NoSuchAlgorithmException, InvalidKeyException, InvalidKeySpecException, IllegalStateException, IOException {
 		
-		Mac mac = Mac.getInstance("HmacSHA512");
+		File mac_file = new File(System.getProperty("user.dir")+"/bin/files/users.mac");
+
+		boolean exists = mac_file.exists();
 		
-		mac.reset();
-		
-		BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/bin/files/users.txt"));
-		
-		String userLine;
-		while ((userLine = reader.readLine()) != null) {
+		if (exists) {
+			Mac mac = Mac.getInstance("HmacSHA512");
 			
-			String[] userArray = userLine.split(";");
-			if (userArray[0].equals("1")) {
-				String password_admin = userArray[2];
+			mac.reset();
+			
+			BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/bin/files/users.txt"));
+			
+			String userLine;
+			while ((userLine = reader.readLine()) != null) {
 				
-				// Gerar a chave secreta baseando-se na password
-			    PBEKeySpec keySpec = new PBEKeySpec(password_admin.toCharArray(), pw_salt, 65536, 256); 
-			    SecretKeyFactory kf;
-				kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+				String[] userArray = userLine.split(";");
+				if (userArray[0].equals("1")) {
+					String password_admin = userArray[2];
+					
+					// Gerar a chave secreta baseando-se na password
+				    PBEKeySpec keySpec = new PBEKeySpec(password_admin.toCharArray(), pw_salt, 65536, 256); 
+				    SecretKeyFactory kf;
+					kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+					
+					SecretKey key = kf.generateSecret(keySpec);
+					
+					mac.init(key);
+				}
 				
-				SecretKey key = kf.generateSecret(keySpec);
-				
-				mac.init(key);
+				byte[] buf = userLine.getBytes();
+				mac.update(buf);
 			}
 			
-			byte[] buf = userLine.getBytes();
-			mac.update(buf);
-		}
+			byte[] toCompare = mac.doFinal();
+			
+			String inMacDir = System.getProperty("user.dir") + "/bin/files/users.mac";
+			BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
+			
+			if ((Hex.encodeHexString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)))) {
+				System.out.println("MAC correctly verified.");
+			} else {
+				System.out.println("MAC is incorrect, users file has been corrupted, shuting down.");
+				System.exit(-1);
+			}
+			
+			reader.close();
+		} /* else {
+			Scanner sc2 = new Scanner(System.in);
+			System.out.println("WARNING: There's no MAC protecting users file intergrity!");
+			System.out.println("Do you wish to calculate it? (yes/no)");
+			String rep = sc2.nextLine();
+			boolean writeMac = false;
+			boolean ans = true;
+			while (ans) {
+				if (rep.equals("yes")) {
+					writeMac = true;
+					ans = false;
+				} else if (rep.equals("no")) {
+					ans = false;
+				}
+			}
+			
+			if (writeMac) {
+				this.writeMacFile(mac_file);
+			}
+		} */
 		
-		byte[] toCompare = mac.doFinal();
-		
-		String inMacDir = System.getProperty("user.dir") + "/bin/files/users.mac";
-		BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
-		
-		if ((Hex.encodeHexString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)))) {
-			System.out.println("MAC correctly verified.");
-		} else {
-			System.out.println("MAC is incorrect, users file has been corrupted, shuting down.");
-			System.exit(-1);
-		}
 			
 		
-		reader.close();
+		
 	}
 	
 		
