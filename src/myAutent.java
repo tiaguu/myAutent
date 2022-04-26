@@ -370,7 +370,10 @@ public class myAutent {
 			File f = new File(pathstr);
 	        String[] pathnames = f.list();
 	        
-	        String[][] files_info = new String[pathnames.length][3];
+	        String[][] files_info = null;
+	        if (pathnames.length > 0) {
+	        	files_info = new String[pathnames.length][3];
+	        }
 	        int count = 0;
 	        for (String filename : pathnames) {
 	        	File file = new File(pathstr + "/" + filename);
