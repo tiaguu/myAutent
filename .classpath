@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="/Users/tiagoteodoro/Desktop/UNI/3º ano 2º semestre/SINF/si025/lib/bcpkix-jdk18on-171.jar"/>
 	<classpathentry kind="lib" path="/Users/tiagoteodoro/Desktop/UNI/3º ano 2º semestre/SINF/si025/lib/bcprov-jdk18on-171.jar"/>
 	<classpathentry kind="lib" path="/Users/tiagoteodoro/Desktop/UNI/3º ano 2º semestre/SINF/si025/lib/bcutil-jdk18on-171.jar"/>
+	<classpathentry kind="lib" path="/Users/tiagoteodoro/Desktop/UNI/3º ano 2º semestre/SINF/si025/lib/commons-codec-1.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

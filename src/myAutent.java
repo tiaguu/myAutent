@@ -71,6 +71,8 @@ import javax.crypto.spec.PBEParameterSpec;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
 
+import org.apache.commons.codec.binary.Hex;
+
 
 
 public class myAutent {
@@ -107,6 +109,7 @@ public class myAutent {
 			System.exit(-1);
 		}
 		
+		Scanner sc = new Scanner(System.in); 
 		File directory = new File(System.getProperty("user.dir")+"/bin/files/");
 		File userFile = new File(System.getProperty("user.dir")+"/bin/files/users.txt");
 		File macFile = new File(System.getProperty("user.dir")+"/bin/files/users.mac");
@@ -118,60 +121,54 @@ public class myAutent {
 				//FileWriter myWriter = new FileWriter(System.getProperty("user.dir")+"/bin/files/users.txt");
 				//FileOutputStream outFile = new FileOutputStream(userFile);
 				BufferedOutputStream outFile = new BufferedOutputStream(new FileOutputStream(userFile));
-				BufferedOutputStream outMacFile = new BufferedOutputStream(new FileOutputStream(macFile));
 				
-				Scanner sc = new Scanner(System.in); 
 				System.out.println("Insert an admin password:");
 				String adminpw = sc.nextLine();
 				
-				byte[] hash = null;
-				try {
-					// Hash the admin password 
-					MessageDigest md = MessageDigest.getInstance("SHA-512");
-					
-					md.update(adminpw.getBytes());
-					md.update(pw_salt);
-					
-					hash = md.digest();
-				    
-				    // Gerar a chave secreta baseando-se na password
-				    PBEKeySpec keySpec = new PBEKeySpec(adminpw.toCharArray( ), pw_salt, 65536, 256); 
-				    SecretKeyFactory kf;
-					kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-					
-					SecretKey key = kf.generateSecret(keySpec);
-				    
-					Mac mac = Mac.getInstance("HmacSHA512");
-					mac.init(key);
-					
-					byte buf[] = ("1;Administrador;"+Arrays.toString(hash)).getBytes();
-					mac.update(buf);
-					
-					//outFile.writeObject(data);
-					outFile.write(("1;Administrador;"+Arrays.toString(hash)).getBytes());
-					outMacFile.write(mac.doFinal());
-					//outFile.write(("1;Administrador;"+Arrays.toString(hash)).getBytes());
-					
-				} catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
-					e.printStackTrace();
-					System.out.println("Error: generating users password hash");
-				}
-			    outFile.close();
-			    outMacFile.close();
-				//myWriter.write("1;Administrador;"+Arrays.toString(hash));
-			    //myWriter.close();
+				// Hash the admin password 
+				MessageDigest md = MessageDigest.getInstance("SHA-512");
+				
+				md.update(adminpw.getBytes());
+				md.update(pw_salt);
+				
+				byte[] hash = md.digest();
+				
+				outFile.write(("1;Administrador;"+Arrays.toString(hash)).getBytes());
+				
 				System.out.println("New users file created\n");
 				String pathstr = System.getProperty("user.dir") + "/bin/files/1";
 			    Path path = Paths.get(pathstr);
 			    Files.createDirectory(path);
-			    sc.close();
-			    
-			    
 				
-				
-			    
-
+			    outFile.close();
 			}
+	    	
+	    	// checks if mac file already exists
+			if (macFile.createNewFile()) {
+				
+				System.out.println("WARNING: There's no MAC protecting users file intergrity!");
+				System.out.println("Do you wish to calculate it? (yes/no)");
+				String rep = sc.nextLine();
+				boolean writeMac = false;
+				boolean ans = true;
+				while (ans) {
+					if (rep.equals("yes")) {
+						writeMac = true;
+						ans = false;
+					} else if (rep.equals("no")) {
+						ans = false;
+					}
+				}
+				
+				if (writeMac) {
+					this.writeMacFile(macFile);
+				}
+				
+			} else {
+				this.verifyMacFile();
+			}
+			
+			sc.close();
 			
 			while(true) {
 				try {
@@ -184,7 +181,7 @@ public class myAutent {
 			    }
 			}
 			
-		} catch (IOException e1) {
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e1) {
 			e1.printStackTrace();
 			System.out.println("Error: creating users file");
 		}
@@ -217,21 +214,6 @@ public class myAutent {
 				} catch (ClassNotFoundException e) {
 					System.out.println("Error: Listening to clients – " + e.getMessage());
 				}
-				
-				/*
-				byte[] hash_passwd = null;
-				try {
-					// Hashing the password for comparision
-					PBEParameterSpec paramSpec = new PBEParameterSpec(pw_salt, 20);
-					PBEKeySpec spec = new PBEKeySpec(passwd.toCharArray());
-					SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-					
-					hash_passwd = factory.generateSecret(spec).getEncoded();
-					
-				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-					System.out.println("Error: generating users password hash");
-				}
-				*/
 				
 				String line;
 				boolean auth = false;
@@ -300,6 +282,14 @@ public class myAutent {
 		private void createUser(String user, ObjectInputStream in, ObjectOutputStream out) {
 			
 			if (user.equals("1")) {
+			
+				try {
+					verifyMacFile();
+				} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException
+						| IllegalStateException | IOException e1) {
+					System.out.println("Error: Verifying MAC file");
+				}
+				
 				try {
 					String userID = (String)in.readObject();
 					String userName = (String)in.readObject();
@@ -348,6 +338,9 @@ public class myAutent {
 							    
 							    out.writeObject("New user created successfully");
 							    System.out.println("New user "+userName+" with ID "+userID+" has been created");
+							    
+							    File macFile = new File(System.getProperty("user.dir")+"/bin/files/users.mac");
+							    writeMacFile(macFile);
 							    
 							//} catch (NoSuchAlgorithmException | CertificateException | NoSuchProviderException
 							//		 | KeyStoreException | OperatorException e) {
@@ -798,11 +791,96 @@ public class myAutent {
 				FileOutputStream kfile = new FileOutputStream(userID+".keystore"); // keystore
 				kstore.store(kfile, userPw.toCharArray());
 						
-		}  
+		}
 		
 		
+	}
+	
+	private void writeMacFile(File macFile) throws IllegalStateException, IOException {
+		BufferedOutputStream outMacFile = new BufferedOutputStream(new FileOutputStream(macFile));
 		
+		try {
+			Mac mac = Mac.getInstance("HmacSHA512");
+			
+			BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/bin/files/users.txt"));
+			
+			String userLine;
+			while ((userLine = reader.readLine()) != null) {
+				
+				String[] userArray = userLine.split(";");
+				if (userArray[0].equals("1")) {
+					String password_admin = userArray[2];
+					
+					// Gerar a chave secreta baseando-se na password
+				    PBEKeySpec keySpec = new PBEKeySpec(password_admin.toCharArray(), pw_salt, 65536, 256); 
+				    SecretKeyFactory kf;
+					kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+					
+					SecretKey key = kf.generateSecret(keySpec);
+					
+					mac.init(key);
+				}
+				
+				byte[] buf = userLine.getBytes();
+				mac.update(buf);
+			}
+			reader.close();
+		    
+			byte[] generated_bytes = mac.doFinal();
+			outMacFile.write(Hex.encodeHexString(generated_bytes).getBytes());
+			
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
+			e.printStackTrace();
+			System.out.println("Error: generating users password hash");
+		}
 		
+		System.out.println("New MAC created\n");
+		outMacFile.close();
+	}
+	
+	private void verifyMacFile() throws NoSuchAlgorithmException, InvalidKeyException, InvalidKeySpecException, IllegalStateException, IOException {
+		
+		Mac mac = Mac.getInstance("HmacSHA512");
+		
+		mac.reset();
+		
+		BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir")+"/bin/files/users.txt"));
+		
+		String userLine;
+		while ((userLine = reader.readLine()) != null) {
+			
+			String[] userArray = userLine.split(";");
+			if (userArray[0].equals("1")) {
+				String password_admin = userArray[2];
+				
+				// Gerar a chave secreta baseando-se na password
+			    PBEKeySpec keySpec = new PBEKeySpec(password_admin.toCharArray(), pw_salt, 65536, 256); 
+			    SecretKeyFactory kf;
+				kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+				
+				SecretKey key = kf.generateSecret(keySpec);
+				
+				mac.init(key);
+			}
+			
+			byte[] buf = userLine.getBytes();
+			mac.update(buf);
+		}
+		
+		byte[] toCompare = mac.doFinal();
+		
+		String inMacDir = System.getProperty("user.dir") + "/bin/files/users.mac";
+		BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
+		
+		if ((Hex.encodeHexString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)))) {
+			System.out.println("MAC correctly verified.");
+		} else {
+			System.out.println("MAC is incorrect, users file has been corrupted, shuting down.");
+			System.exit(-1);
+		}
+			
+		
+		reader.close();
 	}
 	
 		
