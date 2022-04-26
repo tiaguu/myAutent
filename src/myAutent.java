@@ -142,7 +142,7 @@ public class myAutent {
 			}
 	    	
 	    	// checks if mac file already exists
-			if (macFile.createNewFile()) {
+			if (!macFile.exists()) {
 				
 				System.out.println("WARNING: There's no MAC protecting users file intergrity!");
 				System.out.println("Do you wish to calculate it? (yes/no)");
@@ -159,6 +159,7 @@ public class myAutent {
 				}
 				
 				if (writeMac) {
+					macFile.createNewFile();
 					this.writeMacFile(macFile);
 				}
 				
