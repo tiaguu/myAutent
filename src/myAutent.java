@@ -371,7 +371,7 @@ public class myAutent {
 	        String[] pathnames = f.list();
 	        
 	        String[][] files_info = null;
-	        if (pathnames.length > 0) {
+	        if (pathnames != null) {
 	        	files_info = new String[pathnames.length][3];
 	        }
 	        int count = 0;
