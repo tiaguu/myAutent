@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/OpenJDK 11.0.14.1 [11.0.14.1]">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/tiagoteodoro/Desktop/UNI/3º ano 2º semestre/SINF/si025/lib/bcpkix-jdk18on-171.jar"/>
+	<classpathentry kind="lib" path="/Users/tiagoteodoro/Desktop/UNI/3º ano 2º semestre/SINF/si025/lib/bcprov-jdk18on-171.jar"/>
+	<classpathentry kind="lib" path="/Users/tiagoteodoro/Desktop/UNI/3º ano 2º semestre/SINF/si025/lib/bcutil-jdk18on-171.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
