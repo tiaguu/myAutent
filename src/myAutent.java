@@ -366,37 +366,45 @@ public class myAutent {
 		
 		private void listFiles(String user, ObjectInputStream in, ObjectOutputStream out) {
 			
-			String pathstr = System.getProperty("user.dir") + "/bin/files/" + user;
-			File f = new File(pathstr);
-	        String[] pathnames = f.list();
-	        
-	        String[][] files_info = null;
-	        if (pathnames != null) {
-	        	files_info = new String[pathnames.length][3];
-	        }
-	        int count = 0;
-	        for (String filename : pathnames) {
-	        	File file = new File(pathstr + "/" + filename);
-	    		
-	        	Date lastModified = new Date(file.lastModified());
-	        	
-	        	DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");  
-	        	DateFormat timeFormat = new SimpleDateFormat("HH:mm");  
-	        	String date = dateFormat.format(lastModified);  
-	        	String time = timeFormat.format(lastModified);  
-	        	
-	        	String[] file_info = new String[] { 
-	        			  date, time, file.getName()};
-	    		files_info[count] = file_info;
-	    		count++;
-	        }
-	        
-	        try {
-				out.writeObject(files_info);
+			try {
+				String pathstr = System.getProperty("user.dir") + "/bin/files/" + user;
+				File f = new File(pathstr);
+		        String[] pathnames = f.list();
+		        
+		        String[][] files_info = new String[0][0];
+		        if (pathnames != null) {
+		        	files_info = new String[pathnames.length][3];
+		        	
+		        	int count = 0;
+			        for (String filename : pathnames) {
+			        	File file = new File(pathstr + "/" + filename);
+			    		
+			        	Date lastModified = new Date(file.lastModified());
+			        	
+			        	DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");  
+			        	DateFormat timeFormat = new SimpleDateFormat("HH:mm");  
+			        	String date = dateFormat.format(lastModified);  
+			        	String time = timeFormat.format(lastModified);  
+			        	
+			        	String[] file_info = new String[] { 
+			        			  date, time, file.getName()};
+			    		files_info[count] = file_info;
+			    		count++;
+			        }
+			        
+			        
+						out.writeObject(files_info);
+					
+				    System.out.println("User "+user+" has consulted its files");
+		        } else {
+		        	out.writeObject(files_info);
+		        }
 			} catch (IOException e) {
 				System.out.print("Error: Listing files in server – "+ e.getMessage());
 			}
-		    System.out.println("User "+user+" has consulted its files");
+	        
+	        
+	        
 			
 		}
 		
