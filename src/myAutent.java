@@ -635,6 +635,9 @@ public class myAutent {
 							count += bytesRead;
 						}
 						
+						boolean has_finished = (boolean) in.readObject();
+						System.out.println(has_finished);
+						
 						// sends the signature to the client
 						out.writeObject(s.sign());
 						

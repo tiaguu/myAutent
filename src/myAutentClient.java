@@ -524,6 +524,9 @@ public class myAutentClient {
 				    out.flush();
 				    myFileB.close();
 				    
+				    // has finished sending the file
+				    out.writeObject(true);
+				    
 				    try {
 				    	
 				    	byte[] signature = (byte[]) in.readObject();
