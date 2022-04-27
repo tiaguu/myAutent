@@ -247,7 +247,7 @@ public class myAutent {
 			    	if (user.equals(userArray[0]) && Base64.getEncoder().encodeToString(hashed_pw).equals(userArray[2]) ) {
 						out.writeObject(true);
 						auth = true;
-						passwd = Base64.getEncoder().encodeToString(hashed_pw);
+						passwd = userArray[2];
 					}
 			    }
 				
@@ -357,7 +357,7 @@ public class myAutent {
 							    File macFile = new File(System.getProperty("user.dir")+"/bin/files/users.mac");
 							    writeMacFile(macFile);
 							    
-							    generateKey(userID, userPw);
+							    generateKey(userID, Base64.getEncoder().encodeToString(hash));
 							    
 							} catch (NoSuchAlgorithmException | CertificateException | NoSuchProviderException
 									 | KeyStoreException | OperatorException e) {
@@ -445,6 +445,8 @@ public class myAutent {
 					if (create) {
 						
 						try {
+							
+							System.out.println(password);
 							
 							// gets the user private key from the keystore
 							PrivateKey userPrivateKey = getUserPrivateKey(user, password);
