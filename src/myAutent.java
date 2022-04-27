@@ -907,7 +907,7 @@ public class myAutent {
 			
 			System.out.println((Base64.getEncoder().encodeToString(toCompare)));
 			System.out.println(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8));
-			System.out.println((Base64.getEncoder().encodeToString(toCompare)) == (new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)));
+			System.out.println((Base64.getEncoder().encodeToString(toCompare)).equals(new String(inSignStream.readAllBytes())));
 			
 			if ((Base64.getEncoder().encodeToString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)))) {
 				System.out.println("MAC correctly verified.");
