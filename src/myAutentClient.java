@@ -506,9 +506,6 @@ public class myAutentClient {
 				        
 					File myFile = new File(FileDir);
 					
-				    Long len = myFile.length();
-				    out.writeObject(len);
-				    
 				    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
 				    
 				    MessageDigest md = MessageDigest.getInstance("SHA");
@@ -517,16 +514,28 @@ public class myAutentClient {
 				    int n;
 				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
 				    	// gera a sintese do ficheiro
-				    	byte[] hash = md.digest(buffer);
-				    	out.write(hash, 0, hash.length);
+				    	md.update(buffer);
 				    }
+				    
+				    byte[] hash = md.digest();
+				    out.writeObject(hash.length);
+				    out.writeObject(hash);
+				    
+				    /*
+				    byte[] buffer2 = new byte[1024];
+				    int n2;
+				    while ((n2 = hash.read(buffer2, 0, 1024)) > 0) {
+				    	// gera a sintese do ficheiro
+				    	md.update(buffer);
+				    }
+				    out.write(hash, 0, hash.length);
 				    
 				    out.flush();
 				    myFileB.close();
 				    
 				    // has finished sending the file
 				    out.writeObject(true);
-				    
+				    */
 				    try {
 				    	
 				    	byte[] signature = (byte[]) in.readObject();

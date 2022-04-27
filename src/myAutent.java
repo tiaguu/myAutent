@@ -621,7 +621,8 @@ public class myAutent {
 						Signature s = Signature.getInstance("SHA256withRSA");
 						s.initSign(userPrivateKey);
 						
-						int len = ((Long)in.readObject()).intValue();
+						
+						int len = ((int)in.readObject());
 						
 						int count = 0;
 						int bytesRead;
@@ -635,8 +636,9 @@ public class myAutent {
 							count += bytesRead;
 						}
 						
-						boolean has_finished = (boolean) in.readObject();
-						System.out.println(has_finished);
+						//boolean has_finished = (boolean) in.readObject();
+						//System.out.println(has_finished);
+						
 						
 						// sends the signature to the client
 						out.writeObject(s.sign());
