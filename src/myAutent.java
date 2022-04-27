@@ -767,6 +767,8 @@ public class myAutent {
 		private void generateKey(String userID, String userPw)
 			      throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, IOException, KeyStoreException, OperatorException {
 			  
+				BouncyCastleProvider provider = new BouncyCastleProvider();
+			
 				// gera chaves assimetricas RSA  
 			    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 			    keyPairGenerator.initialize(2048);
