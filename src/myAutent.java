@@ -682,6 +682,7 @@ public class myAutent {
 				}
 				
 			} catch (ClassNotFoundException | IOException | NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+				e.printStackTrace();
 				System.out.print("Error: Retrieving files from server – "+ e.getMessage());
 			}
 			

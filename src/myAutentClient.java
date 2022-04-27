@@ -642,7 +642,6 @@ public class myAutentClient {
 					
 				}
 			} catch (IOException | NoSuchAlgorithmException e) {
-				e.printStackTrace();
 				System.out.print("Error: Sending files to server – "+ e.getMessage());
 			}
 		}
