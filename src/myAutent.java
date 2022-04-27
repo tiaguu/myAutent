@@ -634,6 +634,7 @@ public class myAutent {
 							// signs the buffer with the digital signature
 							s.update(buffer);
 							
+							System.out.println(bytesRead);
 							count += bytesRead;
 						}
 						
