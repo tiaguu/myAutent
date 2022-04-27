@@ -315,8 +315,6 @@ public class myAutent {
 					if (!usedID) {
 						
 							try {
-								generateKey(userID, userPw);
-								
 								FileWriter myWriter = new FileWriter(System.getProperty("user.dir")+"/bin/files/users.txt", true);
 								
 								byte[] hash = null;
@@ -345,6 +343,8 @@ public class myAutent {
 							    
 							    File macFile = new File(System.getProperty("user.dir")+"/bin/files/users.mac");
 							    writeMacFile(macFile);
+							    
+							    generateKey(userID, userPw);
 							    
 							} catch (NoSuchAlgorithmException | CertificateException | NoSuchProviderException
 									 | KeyStoreException | OperatorException e) {
