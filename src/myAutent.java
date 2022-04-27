@@ -140,7 +140,6 @@ public class myAutent {
 			    try {
 			    	
 					this.generateKey("1", Base64.getEncoder().encodeToString(hash));
-					System.out.println("user 1 key supostamente gerada");
 				
 			    } catch (CertificateException | NoSuchProviderException | KeyStoreException | OperatorException e) {
 				
@@ -278,6 +277,7 @@ public class myAutent {
 					} catch (ClassNotFoundException e) {
 						System.out.println("Error: Listening to clients – " + e.getMessage());
 					} catch (EOFException e) {
+						e.printStackTrace();
 						System.out.println("Error: Listening to clients – No valid command was provided");
 					}
 				} else {
@@ -419,9 +419,6 @@ public class myAutent {
 			} catch (IOException e) {
 				System.out.print("Error: Listing files in server – "+ e.getMessage());
 			}
-	        
-	        
-	        
 			
 		}
 		
