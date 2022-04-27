@@ -623,6 +623,7 @@ public class myAutent {
 						
 						
 						int len = ((int)in.readObject());
+						System.out.println(len);
 						
 						int count = 0;
 						int bytesRead;
