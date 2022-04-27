@@ -6,7 +6,8 @@ grant codeBase "file:./-" {
 	permission java.io.FilePermission "${user.dir}/bin/files/-", "write, read";
 	permission java.io.FilePermission "${user.dir}/bin/keystore/-", "write, read";
 	
-	permission java.security.SecurityPermission "${user.dir}/lib/-", "getProperty, putProviderProperty.BC";
+	permission java.security.SecurityPermission "${user.dir}/lib/-", "getProperty";
+	permission java.security.SecurityPermission "${user.dir}/lib/-", "putProviderProperty.BC";
 	
 	permission java.util.PropertyPermission "javax.net.ssl.keyStore", "write";
 	permission java.util.PropertyPermission "javax.net.ssl.keyStorePassword", "write";
