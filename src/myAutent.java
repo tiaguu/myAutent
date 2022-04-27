@@ -766,8 +766,6 @@ public class myAutent {
 
 		private void generateKey(String userID, String userPw)
 			      throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, IOException, KeyStoreException, OperatorException {
-			  
-				BouncyCastleProvider provider = new BouncyCastleProvider();
 			
 				// gera chaves assimetricas RSA  
 			    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -791,10 +789,11 @@ public class myAutent {
 			    Certificate certificate = new JcaX509CertificateConverter().getCertificate(certBuilder.build((ContentSigner)contentSigner));
 			    
 			    // guarda chave privada + certificado na keystore
+			    String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+userID+"/"+userID+".keystore";
 			    
 			    KeyStore kstore = KeyStore.getInstance("JKS");
-			    if ((new File(userID+".keystore")).exists()){  // **** file da keystore
-					FileInputStream kfile1 = new FileInputStream(userID+".keystore"); 
+			    if ((new File(user_keystore_path)).exists()){  // **** file da keystore
+					FileInputStream kfile1 = new FileInputStream(user_keystore_path); 
 					kstore.load(kfile1, userPw.toCharArray()); // **** password da keystore
 					kfile1.close();
 			    } else {
@@ -805,7 +804,7 @@ public class myAutent {
 				
 				// **** atencao ao alias do user e 'a password da chave privada
 				kstore.setKeyEntry(userID, (Key)keyPair.getPrivate(), userPw.toCharArray(), chain);
-				FileOutputStream kfile = new FileOutputStream(userID+".keystore"); // keystore
+				FileOutputStream kfile = new FileOutputStream(user_keystore_path); // keystore
 				kstore.store(kfile, userPw.toCharArray());
 						
 		}
