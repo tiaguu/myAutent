@@ -621,7 +621,10 @@ public class myAutent {
 						Signature s = Signature.getInstance("SHA256withRSA");
 						s.initSign(userPrivateKey);
 						
+						byte[] hash = (byte[]) in.readObject();
 						
+						s.update(hash);
+						/*
 						int len = ((int)in.readObject());
 						System.out.println(len);
 						
@@ -637,6 +640,7 @@ public class myAutent {
 							System.out.println(bytesRead);
 							count += bytesRead;
 						}
+						*/
 						
 						//boolean has_finished = (boolean) in.readObject();
 						//System.out.println(has_finished);

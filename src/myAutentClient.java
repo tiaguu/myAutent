@@ -518,7 +518,6 @@ public class myAutentClient {
 				    }
 				    
 				    byte[] hash = md.digest();
-				    out.writeObject(hash.length);
 				    out.writeObject(hash);
 				    
 				    /*
