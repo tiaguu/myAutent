@@ -750,7 +750,8 @@ public class myAutent {
 		private PrivateKey getUserPrivateKey (String usernumber, String password) 
 				throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
 			
-			FileInputStream kfile = new FileInputStream(usernumber+".keystore");  //keystore
+			String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+usernumber+"/"+usernumber+".keystore";
+			FileInputStream kfile = new FileInputStream(user_keystore_path);  //keystore
 	 	   	KeyStore kstore = KeyStore.getInstance("PKCS12");
 	 	   	kstore.load(kfile, password.toCharArray());           //password
 	 	   	PrivateKey userPrivateKey = (PrivateKey) kstore.getKey(usernumber, password.toCharArray());
@@ -762,7 +763,8 @@ public class myAutent {
 		private PublicKey getUserPublicKey (String usernumber, String password) 
 				throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
 			
-			FileInputStream kfile = new FileInputStream(usernumber+".keystore");  //keystore
+			String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+usernumber+"/"+usernumber+".keystore";
+			FileInputStream kfile = new FileInputStream(user_keystore_path);  //keystore
 	 	   	KeyStore kstore = KeyStore.getInstance("PKCS12");
 	 	   	kstore.load(kfile, password.toCharArray());           //password
 	 	   	

@@ -4,7 +4,6 @@ grant codeBase "file:./-" {
 	
 	permission java.io.FilePermission "${user.dir}/bin/files", "write, read";
 	permission java.io.FilePermission "${user.dir}/bin/files/-", "write, read";
-	permission java.io.FilePermission "${user.dir}/bin/files/-/*", "write, read";
 	permission java.io.FilePermission "${user.dir}/bin/keystore/-", "write, read";
 	
 	permission java.security.SecurityPermission "${user.dir}/lib/-", "getProperty";
