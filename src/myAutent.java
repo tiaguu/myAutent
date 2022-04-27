@@ -906,7 +906,7 @@ public class myAutent {
 			BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
 			
 			System.out.println((Base64.getEncoder().encodeToString(toCompare)));
-			System.out.println(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8));
+			System.out.println(Base64.getEncoder().encodeToString(inSignStream.readAllBytes()));
 			System.out.println(Base64.getEncoder().encodeToString(toCompare).equals(Base64.getEncoder().encodeToString(inSignStream.readAllBytes())));
 			
 			if (Base64.getEncoder().encodeToString(toCompare).equals(Base64.getEncoder().encodeToString(inSignStream.readAllBytes()))) {
