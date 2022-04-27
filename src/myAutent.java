@@ -44,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -129,12 +130,23 @@ public class myAutent {
 				
 				byte[] hash = md.digest();
 				
-				outFile.write(("1;Administrador;"+Arrays.toString(hash)).getBytes());
+				outFile.write(("1;Administrador;"+Base64.getEncoder().encodeToString(hash)).getBytes());
 				
 				System.out.println("New users file created\n");
 				String pathstr = System.getProperty("user.dir") + "/bin/files/1";
 			    Path path = Paths.get(pathstr);
 			    Files.createDirectory(path);
+			    
+			    try {
+			    	
+					this.generateKey("1", Base64.getEncoder().encodeToString(hash));
+				
+			    } catch (CertificateException | NoSuchProviderException | KeyStoreException | OperatorException e) {
+				
+			    	// TODO Auto-generated catch block
+					e.printStackTrace();
+				
+			    }
 				
 			    outFile.close();
 			}
@@ -232,7 +244,7 @@ public class myAutent {
 					md2.update(pw_salt);
 			    	byte[] hashed_pw = md2.digest();
 			    	
-			    	if (user.equals(userArray[0]) && Arrays.toString(hashed_pw).equals(userArray[2]) ) {
+			    	if (user.equals(userArray[0]) && Base64.getEncoder().encodeToString(hashed_pw).equals(userArray[2]) ) {
 						out.writeObject(true);
 						auth = true;
 					}
@@ -331,7 +343,7 @@ public class myAutent {
 									System.out.println("Error: generating users password hash");
 								}
 								
-								myWriter.write("\n"+userID+";"+userName+";"+Arrays.toString(hash));
+								myWriter.write("\n"+userID+";"+userName+";"+Base64.getEncoder().encodeToString(hash));
 							    myWriter.close();
 							    
 							    String pathstr = System.getProperty("user.dir") + "/bin/files/" + userID;
@@ -762,54 +774,53 @@ public class myAutent {
 	 	   	
 	 	   	return userPublicKey;
 			
-		}
-
-		private void generateKey(String userID, String userPw)
-			      throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, IOException, KeyStoreException, OperatorException {
+		}		
+		
+	}
+	
+	private void generateKey(String userID, String userPw)
+		      throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, IOException, KeyStoreException, OperatorException {
+		
+			// gera chaves assimetricas RSA  
+		    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+		    keyPairGenerator.initialize(2048);
+		    KeyPair keyPair = keyPairGenerator.generateKeyPair();
+		    
+		    // define informacao para o certificado
+		    X500Name dnName = new X500Name("CN=" + userID);
+		    BigInteger certSerialNumber = BigInteger.valueOf(System.currentTimeMillis());
+		    Instant startDate = Instant.now();
+		    Instant endDate = startDate.plus(2 * 365, ChronoUnit.DAYS);
+		    
+		    // classe que assina o certificado - certifcado auto assinado
+		    String signatureAlgorithm = "SHA256WithRSA";
+		    ContentSigner contentSigner = new JcaContentSignerBuilder(signatureAlgorithm).build(keyPair.getPrivate());
+		    
+		    // cria o certificado
+		    X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
+		        dnName, certSerialNumber, Date.from(startDate), Date.from(endDate), dnName,
+		        keyPair.getPublic());
+		    Certificate certificate = new JcaX509CertificateConverter().getCertificate(certBuilder.build((ContentSigner)contentSigner));
+		    
+		    // guarda chave privada + certificado na keystore
+		    String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+userID+"/"+userID+".keystore";
+		    
+		    KeyStore kstore = KeyStore.getInstance("JKS");
+		    if ((new File(user_keystore_path)).exists()){  // **** file da keystore
+				FileInputStream kfile1 = new FileInputStream(user_keystore_path); 
+				kstore.load(kfile1, userPw.toCharArray()); // **** password da keystore
+				kfile1.close();
+		    } else {
+				kstore.load(null, null); // **** caso em que o file da keystore ainda n�o existe
+		    }
+		    		
+			Certificate chain [] = {certificate, certificate};
 			
-				// gera chaves assimetricas RSA  
-			    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			    keyPairGenerator.initialize(2048);
-			    KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			    
-			    // define informacao para o certificado
-			    X500Name dnName = new X500Name("CN=" + userID);
-			    BigInteger certSerialNumber = BigInteger.valueOf(System.currentTimeMillis());
-			    Instant startDate = Instant.now();
-			    Instant endDate = startDate.plus(2 * 365, ChronoUnit.DAYS);
-			    
-			    // classe que assina o certificado - certifcado auto assinado
-			    String signatureAlgorithm = "SHA256WithRSA";
-			    ContentSigner contentSigner = new JcaContentSignerBuilder(signatureAlgorithm).build(keyPair.getPrivate());
-			    
-			    // cria o certificado
-			    X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
-			        dnName, certSerialNumber, Date.from(startDate), Date.from(endDate), dnName,
-			        keyPair.getPublic());
-			    Certificate certificate = new JcaX509CertificateConverter().getCertificate(certBuilder.build((ContentSigner)contentSigner));
-			    
-			    // guarda chave privada + certificado na keystore
-			    String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+userID+"/"+userID+".keystore";
-			    
-			    KeyStore kstore = KeyStore.getInstance("JKS");
-			    if ((new File(user_keystore_path)).exists()){  // **** file da keystore
-					FileInputStream kfile1 = new FileInputStream(user_keystore_path); 
-					kstore.load(kfile1, userPw.toCharArray()); // **** password da keystore
-					kfile1.close();
-			    } else {
-					kstore.load(null, null); // **** caso em que o file da keystore ainda n�o existe
-			    }
-			    		
-				Certificate chain [] = {certificate, certificate};
-				
-				// **** atencao ao alias do user e 'a password da chave privada
-				kstore.setKeyEntry(userID, (Key)keyPair.getPrivate(), userPw.toCharArray(), chain);
-				FileOutputStream kfile = new FileOutputStream(user_keystore_path); // keystore
-				kstore.store(kfile, userPw.toCharArray());
-						
-		}
-		
-		
+			// **** atencao ao alias do user e 'a password da chave privada
+			kstore.setKeyEntry(userID, (Key)keyPair.getPrivate(), userPw.toCharArray(), chain);
+			FileOutputStream kfile = new FileOutputStream(user_keystore_path); // keystore
+			kstore.store(kfile, userPw.toCharArray());
+					
 	}
 	
 	private void writeMacFile(File macFile) throws IllegalStateException, IOException {
@@ -843,7 +854,7 @@ public class myAutent {
 			reader.close();
 		    
 			byte[] generated_bytes = mac.doFinal();
-			outMacFile.write(Hex.encodeHexString(generated_bytes).getBytes());
+			outMacFile.write(Base64.getEncoder().encodeToString(generated_bytes).getBytes());
 			
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
 			e.printStackTrace();
@@ -893,7 +904,7 @@ public class myAutent {
 			String inMacDir = System.getProperty("user.dir") + "/bin/files/users.mac";
 			BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
 			
-			if ((Hex.encodeHexString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)))) {
+			if ((Base64.getEncoder().encodeToString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)))) {
 				System.out.println("MAC correctly verified.");
 			} else {
 				System.out.println("MAC is incorrect, users file has been corrupted, shuting down.");
