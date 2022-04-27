@@ -11,6 +11,7 @@ grant codeBase "file:./-" {
 	
 	permission java.util.PropertyPermission "javax.net.ssl.keyStore", "write";
 	permission java.util.PropertyPermission "javax.net.ssl.keyStorePassword", "write";
+	permission java.util.PropertyPermission "${user.dir}/lib/-", "read";
 	
 	permission java.util.PropertyPermission "user.dir", "read";
 };
