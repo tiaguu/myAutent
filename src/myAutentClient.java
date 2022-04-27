@@ -520,21 +520,6 @@ public class myAutentClient {
 				    byte[] hash = md.digest();
 				    out.writeObject(hash);
 				    
-				    /*
-				    byte[] buffer2 = new byte[1024];
-				    int n2;
-				    while ((n2 = hash.read(buffer2, 0, 1024)) > 0) {
-				    	// gera a sintese do ficheiro
-				    	md.update(buffer);
-				    }
-				    out.write(hash, 0, hash.length);
-				    
-				    out.flush();
-				    myFileB.close();
-				    
-				    // has finished sending the file
-				    out.writeObject(true);
-				    */
 				    try {
 				    	
 				    	byte[] signature = (byte[]) in.readObject();
@@ -549,20 +534,10 @@ public class myAutentClient {
 						outSignatureFile.close();
 						outSignatureFileStream.close();
 				    	
-						// ???? O SERVIDOR GUARDA AS ASSINATURAS E AS SINTESES ????
-						/*
-						if ((boolean)in.readObject()) {
-							System.out.println("File "+filename+" stored in server correctly");
-						} else {
-							System.out.println("Error: Sending files to server");
-						}
-						*/
 					} catch (ClassNotFoundException e) {
 						System.out.print("Error: Sending files to server – "+ e.getMessage());
 					}
 					
-				
-				    
 				}
 				
 			} catch (IOException | NoSuchAlgorithmException e) {
@@ -625,9 +600,6 @@ public class myAutentClient {
 					String FileDir = System.getProperty("user.dir") + "/bin/files/" + filename;
 					File myFile = new File(FileDir);
 					
-				    Long len = myFile.length();
-				    out.writeObject(len);
-				    
 				    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
 				    
 				    MessageDigest md = MessageDigest.getInstance("SHA");
@@ -636,11 +608,12 @@ public class myAutentClient {
 				    int n;
 				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
 				    	// gera a sintese do ficheiro
-				    	byte[] hash = md.digest(buffer);
-				    	out.write(hash, 0, n);
+				    	md.update(buffer);
 				    }
 				    
-				    out.flush();
+				    byte[] hash = md.digest();
+				    out.writeObject(hash);
+				    
 				    myFileB.close();
 				    
 				    // sends the signature to the server
@@ -654,6 +627,17 @@ public class myAutentClient {
 					
 					
 					// POR COMPLETAR – RECEBE VERIFICAÇÃO DA ASSINATURA
+					try {
+						boolean verifiedSignature = ((boolean)in.readObject());
+						
+						if (verifiedSignature) {
+							System.out.println(filename+"'s signature correctly verified");
+						} else {
+							System.out.println(filename+"'s signature is not valid");
+						}
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
 					
 					
 				}

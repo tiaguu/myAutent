@@ -624,49 +624,9 @@ public class myAutent {
 						byte[] hash = (byte[]) in.readObject();
 						
 						s.update(hash);
-						/*
-						int len = ((int)in.readObject());
-						System.out.println(len);
-						
-						int count = 0;
-						int bytesRead;
-						while (count < len) {
-							byte[] buffer = new byte[1024];
-							bytesRead = in.read(buffer, 0, Math.min(len - count, 1024));
-							
-							// signs the buffer with the digital signature
-							s.update(buffer);
-							
-							System.out.println(bytesRead);
-							count += bytesRead;
-						}
-						*/
-						
-						//boolean has_finished = (boolean) in.readObject();
-						//System.out.println(has_finished);
-						
 						
 						// sends the signature to the client
 						out.writeObject(s.sign());
-						
-						
-						// ???? O SERVIDOR GUARDA AS ASSINATURAS QUE GERA ????
-						/*
-						// saves the signature in the server's file system
-						String SignatureFileOutDir = System.getProperty("user.dir") + "/bin/files/" + user + "/" + file + ".signed." + user;
-						FileOutputStream outSignatureFileStream = new FileOutputStream(SignatureFileOutDir);
-						BufferedOutputStream outSignatureFile = new BufferedOutputStream(outSignatureFileStream);
-						
-						outSignatureFile.write(s.sign());
-						
-						outSignatureFile.close();
-						outSignatureFileStream.close();
-						
-						
-						System.out.println("New file "+file+" stored in user "+user+" directory");
-						out.writeObject(true);
-						*/
-						
 						
 					} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
 							| CertificateException | InvalidKeyException | SignatureException e) {
@@ -708,20 +668,7 @@ public class myAutent {
 				    Signature s = Signature.getInstance("MD5withRSA");
 				    s.initVerify(userPublicKey);
 					
-				    int len = ((Long)in.readObject()).intValue();
-					
-					int count = 0;
-					int bytesRead;
-					while (count < len) {
-						byte[] buffer = new byte[1024];
-						bytesRead = in.read(buffer, 0, Math.min(len - count, 1024));
-						
-						// signs the buffer with the digital signature
-						s.update(buffer);
-						
-						count += bytesRead;
-					}
-					
+				    byte[] hash = (byte[]) in.readObject();
 					byte[] signature = ((byte[])in.readObject());
 				    
 					if (s.verify(signature)) {
