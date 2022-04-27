@@ -611,73 +611,56 @@ public class myAutent {
 				for (String file : filenames) {
 				
 					String FileOutDir = System.getProperty("user.dir") + "/bin/files/" + user + "/" + file;
-					
-					/*
-					boolean create = false;
-					
-					File file_exists = new File(FileOutDir);
-					if (file_exists.exists()) {
-					    out.writeObject(true);
-					    create = (boolean)in.readObject();
-					} else {
-						out.writeObject(false);
-						create = true;
-					}
-					*/
-					
-					//if (create) {
 						
-						try {
+					try {
+						
+						// gets the user private key from the keystore
+						PrivateKey userPrivateKey = getUserPrivateKey(user, password);
+						
+						// initiates the signature with SHA256withRSA algorithm
+						Signature s = Signature.getInstance("SHA256withRSA");
+						s.initSign(userPrivateKey);
+						
+						int len = ((Long)in.readObject()).intValue();
+						
+						int count = 0;
+						int bytesRead;
+						while (count < len) {
+							byte[] buffer = new byte[1024];
+							bytesRead = in.read(buffer, 0, Math.min(len - count, 1024));
 							
-							// gets the user private key from the keystore
-							PrivateKey userPrivateKey = getUserPrivateKey(user, password);
+							// signs the buffer with the digital signature
+							s.update(buffer);
 							
-							// initiates the signature with SHA256withRSA algorithm
-							Signature s = Signature.getInstance("SHA256withRSA");
-							s.initSign(userPrivateKey);
-							
-							int len = ((Long)in.readObject()).intValue();
-							
-							int count = 0;
-							int bytesRead;
-							while (count < len) {
-								byte[] buffer = new byte[1024];
-								bytesRead = in.read(buffer, 0, Math.min(len - count, 1024));
-								
-								// signs the buffer with the digital signature
-								s.update(buffer);
-								
-								count += bytesRead;
-							}
-							
-							// sends the signature to the client
-							out.writeObject(s.sign());
-							
-							
-							// ???? O SERVIDOR GUARDA AS ASSINATURAS QUE GERA ????
-							/*
-							// saves the signature in the server's file system
-							String SignatureFileOutDir = System.getProperty("user.dir") + "/bin/files/" + user + "/" + file + ".signed." + user;
-							FileOutputStream outSignatureFileStream = new FileOutputStream(SignatureFileOutDir);
-							BufferedOutputStream outSignatureFile = new BufferedOutputStream(outSignatureFileStream);
-							
-							outSignatureFile.write(s.sign());
-							
-							outSignatureFile.close();
-							outSignatureFileStream.close();
-							
-							
-							System.out.println("New file "+file+" stored in user "+user+" directory");
-							out.writeObject(true);
-							*/
-							
-							
-						} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
-								| CertificateException | InvalidKeyException | SignatureException e) {
-							System.out.print("Error: Auth in server – "+ e.getMessage());
+							count += bytesRead;
 						}
 						
-					//}
+						// sends the signature to the client
+						out.writeObject(s.sign());
+						
+						
+						// ???? O SERVIDOR GUARDA AS ASSINATURAS QUE GERA ????
+						/*
+						// saves the signature in the server's file system
+						String SignatureFileOutDir = System.getProperty("user.dir") + "/bin/files/" + user + "/" + file + ".signed." + user;
+						FileOutputStream outSignatureFileStream = new FileOutputStream(SignatureFileOutDir);
+						BufferedOutputStream outSignatureFile = new BufferedOutputStream(outSignatureFileStream);
+						
+						outSignatureFile.write(s.sign());
+						
+						outSignatureFile.close();
+						outSignatureFileStream.close();
+						
+						
+						System.out.println("New file "+file+" stored in user "+user+" directory");
+						out.writeObject(true);
+						*/
+						
+						
+					} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
+							| CertificateException | InvalidKeyException | SignatureException e) {
+						System.out.print("Error: Auth in server – "+ e.getMessage());
+					}
 					
 				}
 				

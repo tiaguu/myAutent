@@ -503,89 +503,60 @@ public class myAutentClient {
 				for (String filename : existingFileNames) {
 					
 					String FileDir = System.getProperty("user.dir") + "/bin/files/" + filename;
+				        
+					File myFile = new File(FileDir);
+					
+				    Long len = myFile.length();
+				    out.writeObject(len);
 				    
-					
-					// !!!!! Adicionar especificação de síntese !!!! 
-					
-					/*
-					boolean file_exists = (boolean)in.readObject();
-					
-					boolean create = true;
-					if (file_exists) {
-						boolean ans = true;
-						while (ans) {
-							System.out.println("\nThere's already a file with name "+filename+" stored in the server, do you wish to replace it? (yes or no)");
-							String rep = sc.nextLine();
-							if (rep.equals("yes")) {
-								out.writeObject(true);
-								ans = false;
-							} else if (rep.equals("no")) {
-								out.writeObject(false);
-								create = false;
-								ans = false;
-							}
+				    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
+				    
+				    MessageDigest md = MessageDigest.getInstance("SHA");
+				    
+				    byte[] buffer = new byte[1024];
+				    int n;
+				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
+				    	// gera a sintese do ficheiro
+				    	byte[] hash = md.digest(buffer);
+				    	out.write(hash, 0, n);
+				    }
+				    
+				    out.flush();
+				    myFileB.close();
+				    
+				    try {
+				    	
+				    	byte[] signature = (byte[]) in.readObject();
+				    	
+				    	// saves the signature in the user's file system
+						String SignatureFileOutDir = System.getProperty("user.dir") + "/bin/files/" + filename + ".signed." + user;
+						FileOutputStream outSignatureFileStream = new FileOutputStream(SignatureFileOutDir);
+						BufferedOutputStream outSignatureFile = new BufferedOutputStream(outSignatureFileStream);
+						
+						outSignatureFile.write(signature);
+						
+						outSignatureFile.close();
+						outSignatureFileStream.close();
+				    	
+						// ???? O SERVIDOR GUARDA AS ASSINATURAS E AS SINTESES ????
+						/*
+						if ((boolean)in.readObject()) {
+							System.out.println("File "+filename+" stored in server correctly");
+						} else {
+							System.out.println("Error: Sending files to server");
 						}
+						*/
+					} catch (ClassNotFoundException e) {
+						System.out.print("Error: Sending files to server – "+ e.getMessage());
 					}
 					
-					*/
-					
-					//if (create) {
-					    
-						File myFile = new File(FileDir);
-						
-					    Long len = myFile.length();
-					    out.writeObject(len);
-					    
-					    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
-					    
-					    MessageDigest md = MessageDigest.getInstance("SHA");
-					    
-					    byte[] buffer = new byte[1024];
-					    int n;
-					    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
-					    	// gera a sintese do ficheiro
-					    	byte[] hash = md.digest(buffer);
-					    	out.write(hash, 0, n);
-					    }
-					    
-					    out.flush();
-					    myFileB.close();
-					    
-					    try {
-					    	
-					    	byte[] signature = (byte[]) in.readObject();
-					    	
-					    	// saves the signature in the user's file system
-							String SignatureFileOutDir = System.getProperty("user.dir") + "/bin/files/" + filename + ".signed." + user;
-							FileOutputStream outSignatureFileStream = new FileOutputStream(SignatureFileOutDir);
-							BufferedOutputStream outSignatureFile = new BufferedOutputStream(outSignatureFileStream);
-							
-							outSignatureFile.write(signature);
-							
-							outSignatureFile.close();
-							outSignatureFileStream.close();
-					    	
-							// ???? O SERVIDOR GUARDA AS ASSINATURAS E AS SINTESES ????
-							/*
-							if ((boolean)in.readObject()) {
-								System.out.println("File "+filename+" stored in server correctly");
-							} else {
-								System.out.println("Error: Sending files to server");
-							}
-							*/
-						} catch (ClassNotFoundException e) {
-							System.out.print("Error: Sending files to server – "+ e.getMessage());
-						}
-						
-					//}
+				
 				    
 				}
 				
 			} catch (IOException | NoSuchAlgorithmException e) {
 				System.out.print("Error: Sending files to server – "+ e.getMessage());
-			} // catch (ClassNotFoundException e) {
-			//	System.out.print("Error: Sending files to server – "+ e.getMessage());
-			//}
+			} 
 				
 			
 		}
