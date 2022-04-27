@@ -402,10 +402,10 @@ public class myAutentClient {
 				
 				for (String file : filenames) {
 					boolean exists = (boolean)in.readObject();
-					boolean authorized = (boolean)in.readObject();
+					// boolean authorized = (boolean)in.readObject();
 					
 					if (exists) {
-						if (authorized) {
+						// if (authorized) {
 							
 							String FileOutDir = System.getProperty("user.dir") + "/bin/files/" + file;
 							
@@ -445,9 +445,9 @@ public class myAutentClient {
 							out.writeObject(true);
 							System.out.println("File "+file+"'s signature was retrieved from the server successfully");
 						
-						} else {
-							System.out.println("You are not authorized to retrieve file "+file);
-						}
+						//} else {
+						//	System.out.println("You are not authorized to retrieve file "+file);
+						//}
 					} else {
 						System.out.println("File "+file+" does not exist in server");
 					}

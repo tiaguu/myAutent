@@ -516,7 +516,7 @@ public class myAutent {
 			
 			try {
 				
-				/*
+				
 				PublicKey userPublicKey = null;
 				try {
 					userPublicKey = (PublicKey) getUserPublicKey(user, password);
@@ -526,7 +526,6 @@ public class myAutent {
 					// TO DO 
 					
 				}
-				*/
 				
 				String[] filenames = (String[])in.readObject();
 				
