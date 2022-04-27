@@ -247,6 +247,7 @@ public class myAutent {
 			    	if (user.equals(userArray[0]) && Base64.getEncoder().encodeToString(hashed_pw).equals(userArray[2]) ) {
 						out.writeObject(true);
 						auth = true;
+						passwd = Base64.getEncoder().encodeToString(hashed_pw);
 					}
 			    }
 				
