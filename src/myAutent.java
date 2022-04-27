@@ -277,7 +277,6 @@ public class myAutent {
 					} catch (ClassNotFoundException e) {
 						System.out.println("Error: Listening to clients – " + e.getMessage());
 					} catch (EOFException e) {
-						e.printStackTrace();
 						System.out.println("Error: Listening to clients – No valid command was provided");
 					}
 				} else {
