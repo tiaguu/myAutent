@@ -905,12 +905,7 @@ public class myAutent {
 			String inMacDir = System.getProperty("user.dir") + "/bin/files/users.mac";
 			BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
 			
-			System.out.println((Base64.getEncoder().encodeToString(toCompare)));
-			//System.out.println(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8));
-			System.out.println(Base64.getEncoder().encodeToString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8)));
-			System.out.println(toCompare.equals(inSignStream.readAllBytes()));
-			
-			if (Base64.getEncoder().encodeToString(toCompare).equals(Base64.getEncoder().encodeToString(inSignStream.readAllBytes()))) {
+			if (Base64.getEncoder().encodeToString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8))) {
 				System.out.println("MAC correctly verified.");
 			} else {
 				System.out.println("MAC is incorrect, users file has been corrupted, shuting down.");
