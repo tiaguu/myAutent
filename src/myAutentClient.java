@@ -518,7 +518,7 @@ public class myAutentClient {
 				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
 				    	// gera a sintese do ficheiro
 				    	byte[] hash = md.digest(buffer);
-				    	out.write(hash, 0, n);
+				    	out.write(hash, 0, hash.length);
 				    }
 				    
 				    out.flush();
