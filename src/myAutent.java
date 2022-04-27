@@ -140,6 +140,7 @@ public class myAutent {
 			    try {
 			    	
 					this.generateKey("1", Base64.getEncoder().encodeToString(hash));
+					System.out.println("user 1 key supostamente gerada");
 				
 			    } catch (CertificateException | NoSuchProviderException | KeyStoreException | OperatorException e) {
 				
