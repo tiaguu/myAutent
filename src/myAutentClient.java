@@ -523,14 +523,6 @@ public class myAutentClient {
 						
 						count += bytesRead;
 					}
-				    /*
-				    byte[] buffer = new byte[1024];
-				    int n;
-				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
-				    	// gera a sintese do ficheiro
-				    	md.update(buffer);
-				    }
-				    */
 				    
 				    byte[] hash = md.digest();
 				    out.writeObject(hash);
@@ -548,6 +540,8 @@ public class myAutentClient {
 						
 						outSignatureFile.close();
 						outSignatureFileStream.close();
+						
+						System.out.println(filename+"'s signature stored correctly");
 				    	
 					} catch (ClassNotFoundException e) {
 						System.out.print("Error: Sending files to server – "+ e.getMessage());
