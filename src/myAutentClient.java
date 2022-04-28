@@ -412,14 +412,14 @@ public class myAutentClient {
 							FileOutputStream outFileStream = new FileOutputStream(FileOutDir);
 							BufferedOutputStream outFile = new BufferedOutputStream(outFileStream);
 							
-							int len = ((Long)in.readObject()).intValue();
+							//int len = ((Long)in.readObject()).intValue();
 							
 							int count = 0;
 							int bytesRead;
 							
-							while (count < len) {
+							while (in.available() > 0) {
 								byte[] buffer = new byte[1024];
-								bytesRead = in.read(buffer, 0, Math.min(len - count, 1024));
+								bytesRead = in.read(buffer, 0, in.available());//Math.min(len - count, 1024));
 								outFile.write(buffer);
 								count += bytesRead;
 							}

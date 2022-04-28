@@ -50,6 +50,7 @@ import java.util.Scanner;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
@@ -70,6 +71,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -580,21 +582,49 @@ public class myAutent {
 					
 					if (retrieve) {
 						
+						String KeyInDir = System.getProperty("user.dir") + "/bin/files/" + user + "/" + file + ".key";
+						BufferedInputStream BufferKey = new BufferedInputStream(new FileInputStream(KeyInDir));
+						
+						//Dicas para decifrar
+						byte[] KeyEncoded = new byte[256];
+						BufferKey.read(KeyEncoded);
+						
+						PrivateKey userPrivateKey;
+						Cipher ca = null;
+						try {
+							userPrivateKey = this.getUserPrivateKey(user, password);
+							
+							ca = Cipher.getInstance("RSA");
+						    ca.init(Cipher.UNWRAP_MODE, userPrivateKey);
+						    
+						    Key keyEncoded = ca.unwrap(KeyEncoded, "RSA", Cipher.SECRET_KEY);
+							
+						    SecretKeySpec KeySpec = new SecretKeySpec(keyEncoded.getEncoded(), "AES");
+						    
+						    Cipher c = Cipher.getInstance("AES");
+							c.init(Cipher.DECRYPT_MODE, KeySpec);
+						} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
+								| CertificateException | NoSuchPaddingException | InvalidKeyException e1) {
+							System.out.print("Error: Encryption in server – "+ e1.getMessage());
+						}
+						
 					    File myFile = new File(FileOutDir);
 					    
-					    Long len = myFile.length();
-					    out.writeObject(len);
+					    //Long len = myFile.length();
+					    //out.writeObject(len);
 						
 					    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileOutDir));
+					    BufferedInputStream cipherInputStream =  new BufferedInputStream(new CipherInputStream(myFileB, ca));
 					    
 					    byte[] buffer = new byte[1024];
 					    int n;
-					    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
+					    while ((n = cipherInputStream.read(buffer, 0, 1024)) > 0) {
 					    	out.write(buffer, 0, n);
 					    	
 					    }
 					    out.flush();
 					    myFileB.close();
+					    cipherInputStream.close();
 					    
 					    try {
 							if ((boolean)in.readObject()) {
