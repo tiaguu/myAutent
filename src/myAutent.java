@@ -141,10 +141,7 @@ public class myAutent {
 					this.generateKey("1", Base64.getEncoder().encodeToString(hash));
 				
 			    } catch (CertificateException | NoSuchProviderException | KeyStoreException | OperatorException e) {
-				
-			    	// TODO Auto-generated catch block
-					e.printStackTrace();
-				
+			    	System.out.println("Error: creating users file");
 			    }
 				
 			    outFile.close();
@@ -284,10 +281,7 @@ public class myAutent {
 				in.close();
  			
 				socket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
+			} catch (IOException | NoSuchAlgorithmException e) {
 				e.printStackTrace();
 			}
 		}
@@ -362,9 +356,7 @@ public class myAutent {
 						
 					}
 					
-				} catch (ClassNotFoundException e) {
-					System.out.print("Error: Creating user in server – "+ e.getMessage());
-				} catch (IOException e) {
+				} catch (ClassNotFoundException | IOException e) {
 					System.out.print("Error: Creating user in server – "+ e.getMessage());
 				}
 			} else {
@@ -457,10 +449,6 @@ public class myAutent {
 							BufferedOutputStream outFile = new BufferedOutputStream(outFileStream);
 							CipherOutputStream outCipher = new CipherOutputStream(outFile, c);
 							
-							// initiates the signature with SHA256withRSA algorithm
-							///Signature s = Signature.getInstance("SHA256withRSA");
-							//s.initSign(userPrivateKey);
-							
 							Cipher c2 = Cipher.getInstance("RSA");
 						    c2.init(Cipher.ENCRYPT_MODE, userPrivateKey);
 							
@@ -481,8 +469,6 @@ public class myAutent {
 								outCipher.write(buffer);
 								count += bytesRead;
 							}
-							
-							//s.update(md.digest());
 							
 							outCipher.close();
 							outFile.close();
@@ -507,7 +493,6 @@ public class myAutent {
 						    
 							
 							byte[] signature = c2.doFinal(md.digest());
-							//byte[] signature = s.sign();
 							
 							// sends the signature to the client
 							out.writeObject(signature);
@@ -602,12 +587,6 @@ public class myAutent {
 							System.out.print("Error: Encryption in server – "+ e1.getMessage());
 						}
 						
-						//File myFile = new File(FileOutDir);
-					    
-					    //Long len = myFile.length();
-					    //int len = c.getOutputSize((int) myFile.length());
-					    //out.writeObject(len);
-						
 					    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileOutDir));
 					    BufferedInputStream cipherInputStream =  new BufferedInputStream(new CipherInputStream(myFileB, c));
 					    
@@ -681,19 +660,12 @@ public class myAutent {
 						// gets the user private key from the keystore
 						PrivateKey userPrivateKey = getUserPrivateKey(user, password);
 						
-						// initiates the signature with SHA256withRSA algorithm
-						//Signature s = Signature.getInstance("SHA256withRSA");
-						//s.initSign(userPrivateKey);
-						
 						Cipher c2 = Cipher.getInstance("RSA");
 					    c2.init(Cipher.ENCRYPT_MODE, userPrivateKey);
 						
 						byte[] hash = (byte[]) in.readObject();
 						
-						//s.update(hash);
-						
 						byte[] signature = c2.doFinal(hash);
-						//byte[] signature = s.sign();
 						
 						// sends the signature to the client
 						out.writeObject(signature);
@@ -716,8 +688,6 @@ public class myAutent {
 		private void verifySignatures(String user, String password, ObjectInputStream in, ObjectOutputStream out) {
 			
 			try {
-				
-				
 				PublicKey userPublicKey = null;
 				try {
 					userPublicKey = (PublicKey) getUserPublicKey(user, password);
@@ -733,13 +703,8 @@ public class myAutent {
 					
 					try {
 						
-						//Signature s = Signature.getInstance("SHA256withRSA");
-					    //s.initVerify(userPublicKey);
-						
 					    byte[] hash = (byte[]) in.readObject();
 						byte[] signature = (byte[])in.readObject();
-						
-						//s.update(hash);
 					    
 						Cipher c2 = Cipher.getInstance("RSA");
 					    c2.init(Cipher.DECRYPT_MODE, userPublicKey);
@@ -885,7 +850,6 @@ public class myAutent {
 			reader.close();
 		    
 			byte[] generated_bytes = mac.doFinal();
-			//outMacFile.write(Base64.getEncoder().encodeToString(generated_bytes).getBytes());
 			outMacFile.write(generated_bytes);
 			
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
@@ -936,7 +900,6 @@ public class myAutent {
 			String inMacDir = System.getProperty("user.dir") + "/bin/files/users.mac";
 			BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
 			
-			//if (Base64.getEncoder().encodeToString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8))) {
 			if (Arrays.equals(toCompare, inSignStream.readAllBytes())) {
 				System.out.println("MAC correctly verified.");
 			} else {
