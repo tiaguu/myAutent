@@ -419,6 +419,7 @@ public class myAutentClient {
 							byte[] buffer = new byte[1024];
 							while ((bytesRead = in.read(buffer)) != -1) {
 								outFile.write(buffer);
+								System.out.println(bytesRead);
 								//count += bytesRead;
 							}
 							
