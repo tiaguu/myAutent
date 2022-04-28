@@ -416,7 +416,7 @@ public class myAutentClient {
 							//System.out.println(len);
 							
 							byte[] sizeBuffer = new byte[2];
-							byte[] dataBuffer = new byte[1024];
+							byte[] dataBuffer = new byte[65535];
 							while (true) {
 							    in.read(sizeBuffer, 0, 2);
 							    int r = ((sizeBuffer[0] & 0xFF) << 8) | (sizeBuffer[1] & 0xFF);
