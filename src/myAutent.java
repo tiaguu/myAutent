@@ -452,8 +452,8 @@ public class myAutent {
 							FileOutputStream outFileStream = new FileOutputStream(FileOutDir);
 							BufferedOutputStream outFile = new BufferedOutputStream(outFileStream);
 							
-							// initiates the signature with SHA256withRSA algorithm
-							Signature s = Signature.getInstance("SHA256withRSA");
+							// initiates the signature with SHA512withRSA algorithm
+							Signature s = Signature.getInstance("SHA512withRSA");
 							s.initSign(userPrivateKey);
 							
 							int len = ((Long)in.readObject()).intValue();
@@ -617,8 +617,8 @@ public class myAutent {
 						// gets the user private key from the keystore
 						PrivateKey userPrivateKey = getUserPrivateKey(user, password);
 						
-						// initiates the signature with SHA256withRSA algorithm
-						Signature s = Signature.getInstance("SHA256withRSA");
+						// initiates the signature with SHA512withRSA algorithm
+						Signature s = Signature.getInstance("SHA512withRSA");
 						s.initSign(userPrivateKey);
 						
 						byte[] hash = (byte[]) in.readObject();
@@ -670,7 +670,7 @@ public class myAutent {
 					
 					try {
 						
-						Signature s = Signature.getInstance("SHA256withRSA");
+						Signature s = Signature.getInstance("SHA512withRSA");
 					    s.initVerify(userPublicKey);
 						
 					    byte[] hash = (byte[]) in.readObject();
@@ -746,7 +746,7 @@ public class myAutent {
 		    Instant endDate = startDate.plus(2 * 365, ChronoUnit.DAYS);
 		    
 		    // classe que assina o certificado - certifcado auto assinado
-		    String signatureAlgorithm = "SHA256WithRSA";
+		    String signatureAlgorithm = "SHA512WithRSA";
 		    ContentSigner contentSigner = new JcaContentSignerBuilder(signatureAlgorithm).build(keyPair.getPrivate());
 		    
 		    // cria o certificado
@@ -794,7 +794,7 @@ public class myAutent {
 					// Gerar a chave secreta baseando-se na password
 				    PBEKeySpec keySpec = new PBEKeySpec(password_admin.toCharArray(), pw_salt, 65536, 256); 
 				    SecretKeyFactory kf;
-					kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+					kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
 					
 					SecretKey key = kf.generateSecret(keySpec);
 					
@@ -841,7 +841,7 @@ public class myAutent {
 					// Gerar a chave secreta baseando-se na password
 				    PBEKeySpec keySpec = new PBEKeySpec(password_admin.toCharArray(), pw_salt, 65536, 256); 
 				    SecretKeyFactory kf;
-					kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+					kf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
 					
 					SecretKey key = kf.generateSecret(keySpec);
 					

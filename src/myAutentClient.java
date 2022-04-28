@@ -508,7 +508,7 @@ public class myAutentClient {
 					
 				    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
 				    
-				    MessageDigest md = MessageDigest.getInstance("SHA-256");
+				    MessageDigest md = MessageDigest.getInstance("SHA-512");
 				    
 				    byte[] buffer = new byte[1024];
 				    int n;
@@ -602,7 +602,7 @@ public class myAutentClient {
 					
 				    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
 				    
-				    MessageDigest md = MessageDigest.getInstance("SHA-256");
+				    MessageDigest md = MessageDigest.getInstance("SHA-512");
 				    
 				    byte[] buffer = new byte[1024];
 				    int n;
