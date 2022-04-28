@@ -665,7 +665,7 @@ public class myAutent {
 				
 					boolean verify = false;
 				    
-				    Signature s = Signature.getInstance("MD5withRSA");
+				    Signature s = Signature.getInstance("SHA256withRSA");
 				    s.initVerify(userPublicKey);
 					
 				    byte[] hash = (byte[]) in.readObject();
