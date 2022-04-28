@@ -506,17 +506,31 @@ public class myAutentClient {
 					String FileDir = System.getProperty("user.dir") + "/bin/files/" + filename;
 				        
 					File myFile = new File(FileDir);
+					int len = (int) myFile.length();
 					
 				    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
 				    
 				    MessageDigest md = MessageDigest.getInstance("SHA-256");
 				    
+				    int count = 0;
+					int bytesRead;
+					while (count < len) {
+						byte[] buffer = new byte[1024];
+						bytesRead = myFileB.read(buffer, 0, Math.min(len - count, 1024));
+						
+						// signs the buffer with the digital signature
+						md.update(buffer);
+						
+						count += bytesRead;
+					}
+				    /*
 				    byte[] buffer = new byte[1024];
 				    int n;
 				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
 				    	// gera a sintese do ficheiro
 				    	md.update(buffer);
 				    }
+				    */
 				    
 				    byte[] hash = md.digest();
 				    out.writeObject(hash);
@@ -600,17 +614,31 @@ public class myAutentClient {
 					
 					String FileDir = System.getProperty("user.dir") + "/bin/files/" + filename;
 					File myFile = new File(FileDir);
+					int len = (int) myFile.length();
 					
 				    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileDir));
 				    
 				    MessageDigest md = MessageDigest.getInstance("SHA-256");
 				    
+				    int count = 0;
+					int bytesRead;
+					while (count < len) {
+						byte[] buffer = new byte[1024];
+						bytesRead = myFileB.read(buffer, 0, Math.min(len - count, 1024));
+						
+						// signs the buffer with the digital signature
+						md.update(buffer);
+						
+						count += bytesRead;
+					}
+				    /*
 				    byte[] buffer = new byte[1024];
 				    int n;
 				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
 				    	// gera a sintese do ficheiro
 				    	md.update(buffer);
 				    }
+				    */
 				    
 				    byte[] hash = md.digest();
 				    out.writeObject(hash);
