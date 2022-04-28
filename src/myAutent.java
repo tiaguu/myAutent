@@ -653,9 +653,7 @@ public class myAutent {
 					userPublicKey = (PublicKey) getUserPublicKey(user, password);
 				} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
 						| CertificateException e2) {
-					
-					// TO DO 
-					
+					System.out.print("Error: Verifying signatures in server – "+ e2.getMessage());
 				}
 				
 				
@@ -664,29 +662,34 @@ public class myAutent {
 				for (String file : filenames) {			
 				
 					boolean verify = false;
-				    
-				    Signature s = Signature.getInstance("SHA256withRSA");
-				    s.initVerify(userPublicKey);
 					
-				    byte[] hash = (byte[]) in.readObject();
-					byte[] signature = ((byte[])in.readObject());
-					
-					s.update(hash);
-				    
-					if (s.verify(signature)) {
-						out.writeObject(true);
-						System.out.println("Verified "+file+"'s signature correctly");
-					} else {
+					try {
+						
+						Signature s = Signature.getInstance("SHA256withRSA");
+					    s.initVerify(userPublicKey);
+						
+					    byte[] hash = (byte[]) in.readObject();
+						byte[] signature = ((byte[])in.readObject());
+						
+						s.update(hash);
+					    
+						if (s.verify(signature)) {
+							out.writeObject(true);
+							System.out.println("Verified "+file+"'s signature correctly");
+						} else {
+							out.writeObject(false);
+							System.out.println(file+"'s signature is not valid");
+						}
+						
+					} catch (SignatureException e2) {
 						out.writeObject(false);
 						System.out.println(file+"'s signature is not valid");
 					}
-						
 				}
 				
-			} catch (ClassNotFoundException | IOException | NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-				e.printStackTrace();
-				System.out.print("Error: Retrieving files from server – "+ e.getMessage());
-			}
+			} catch (ClassNotFoundException | IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+				System.out.print("Error: Verifying signatures in server – "+ e.getMessage());
+			} 
 			
 		}
 		
