@@ -456,6 +456,8 @@ public class myAutent {
 							Signature s = Signature.getInstance("SHA256withRSA");
 							s.initSign(userPrivateKey);
 							
+							MessageDigest md = MessageDigest.getInstance("SHA-256");
+							
 							int len = ((Long)in.readObject()).intValue();
 							
 							int count = 0;
@@ -465,12 +467,14 @@ public class myAutent {
 								bytesRead = in.read(buffer, 0, Math.min(len - count, 1024));
 								
 								// signs the buffer with the digital signature
-								s.update(buffer);
+								md.update(buffer);
 								
 								// writes the buffer to the stream
 								outFile.write(buffer);
 								count += bytesRead;
 							}
+							
+							s.update(md.digest());
 							
 							outFile.close();
 							outFileStream.close();
@@ -623,20 +627,15 @@ public class myAutent {
 						
 						byte[] hash = (byte[]) in.readObject();
 						
-						Cipher c = Cipher.getInstance("RSA"); 
-						c.init(Cipher.ENCRYPT_MODE, userPrivateKey);
+						s.update(hash);
 						
-						byte[] signature = c.doFinal(hash);
-						
-						//s.update(hash);
-						
-						//byte[] signature = s.sign();
+						byte[] signature = s.sign();
 						
 						// sends the signature to the client
 						out.writeObject(signature);
 						
 					} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
-							| CertificateException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
+							| CertificateException | InvalidKeyException | SignatureException e) {
 						System.out.print("Error: Auth in server – "+ e.getMessage());
 					}
 					
