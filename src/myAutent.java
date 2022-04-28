@@ -75,10 +75,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
 
-import org.apache.commons.codec.binary.Hex;
-
-
-
 public class myAutent {
 
 	
@@ -462,8 +458,11 @@ public class myAutent {
 							CipherOutputStream outCipher = new CipherOutputStream(outFile, c);
 							
 							// initiates the signature with SHA256withRSA algorithm
-							Signature s = Signature.getInstance("SHA256withRSA");
-							s.initSign(userPrivateKey);
+							///Signature s = Signature.getInstance("SHA256withRSA");
+							//s.initSign(userPrivateKey);
+							
+							Cipher c2 = Cipher.getInstance("RSA");
+						    c2.init(Cipher.ENCRYPT_MODE, userPrivateKey);
 							
 							MessageDigest md = MessageDigest.getInstance("SHA-256");
 							
@@ -483,7 +482,7 @@ public class myAutent {
 								count += bytesRead;
 							}
 							
-							s.update(md.digest());
+							//s.update(md.digest());
 							
 							outCipher.close();
 							outFile.close();
@@ -507,8 +506,8 @@ public class myAutent {
 							}
 						    
 							
-							
-							byte[] signature = s.sign();
+							byte[] signature = c2.doFinal(md.digest());
+							//byte[] signature = s.sign();
 							
 							// sends the signature to the client
 							out.writeObject(signature);
@@ -529,7 +528,7 @@ public class myAutent {
 							
 							
 						} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
-								| CertificateException | InvalidKeyException | SignatureException | NoSuchPaddingException e) {
+								| CertificateException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
 							System.out.print("Error: Auth in server – "+ e.getMessage());
 						}
 						
@@ -555,9 +554,7 @@ public class myAutent {
 					userPublicKey = (PublicKey) getUserPublicKey(user, password);
 				} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
 						| CertificateException e2) {
-					
-					// TO DO 
-					
+					System.out.print("Error: Encryption in server – "+ e2.getMessage());
 				}
 				
 				String[] filenames = (String[])in.readObject();
@@ -685,20 +682,24 @@ public class myAutent {
 						PrivateKey userPrivateKey = getUserPrivateKey(user, password);
 						
 						// initiates the signature with SHA256withRSA algorithm
-						Signature s = Signature.getInstance("SHA256withRSA");
-						s.initSign(userPrivateKey);
+						//Signature s = Signature.getInstance("SHA256withRSA");
+						//s.initSign(userPrivateKey);
+						
+						Cipher c2 = Cipher.getInstance("RSA");
+					    c2.init(Cipher.ENCRYPT_MODE, userPrivateKey);
 						
 						byte[] hash = (byte[]) in.readObject();
 						
-						s.update(hash);
+						//s.update(hash);
 						
-						byte[] signature = s.sign();
+						byte[] signature = c2.doFinal(hash);
+						//byte[] signature = s.sign();
 						
 						// sends the signature to the client
 						out.writeObject(signature);
 						
 					} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
-							| CertificateException | InvalidKeyException | SignatureException e) {
+							| CertificateException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
 						System.out.print("Error: Auth in server – "+ e.getMessage());
 					}
 					
@@ -732,15 +733,20 @@ public class myAutent {
 					
 					try {
 						
-						Signature s = Signature.getInstance("SHA256withRSA");
-					    s.initVerify(userPublicKey);
+						//Signature s = Signature.getInstance("SHA256withRSA");
+					    //s.initVerify(userPublicKey);
 						
 					    byte[] hash = (byte[]) in.readObject();
 						byte[] signature = (byte[])in.readObject();
 						
-						s.update(hash);
+						//s.update(hash);
 					    
-						if (s.verify(signature)) {
+						Cipher c2 = Cipher.getInstance("RSA");
+					    c2.init(Cipher.DECRYPT_MODE, userPublicKey);
+					    
+					    byte[] signature_hash = c2.doFinal(signature);
+						
+						if (Arrays.equals(hash, signature_hash)) {
 							out.writeObject(true);
 							System.out.println("Verified "+file+"'s signature correctly");
 						} else {
@@ -748,7 +754,7 @@ public class myAutent {
 							System.out.println(file+"'s signature is not valid");
 						}
 						
-					} catch (SignatureException e2) {
+					} catch (NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e2) {
 						out.writeObject(false);
 						System.out.println(file+"'s signature is not valid");
 					}
