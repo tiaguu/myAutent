@@ -620,6 +620,7 @@ public class myAutent {
 					    byte[] buffer = new byte[1026];
 					    while (true) {
 					      int r = cipherInputStream.read(buffer, 2, 1024);
+					      System.out.println(r);
 					      if (r == -1) break;
 					      buffer[0] = (byte) (r >> 8);
 					      buffer[1] = (byte) r;
