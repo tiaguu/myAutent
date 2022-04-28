@@ -86,6 +86,7 @@ public class myAutentClient {
 								verifySignatures(args, in, out);
 								break;
 						}
+						System.out.println("\n");
 					} else {
 						System.out.println("Error: Authentication in server failed, provide a correct username and password");
 					}
