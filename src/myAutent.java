@@ -671,6 +671,8 @@ public class myAutent {
 						// sends the signature to the client
 						out.writeObject(signature);
 						
+						System.out.println(file+"'s signature sent to client");
+						
 					} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
 							| CertificateException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
 						System.out.print("Error: Auth in server – "+ e.getMessage());
