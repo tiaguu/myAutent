@@ -628,8 +628,12 @@ public class myAutent {
 							    buffer[1] = (byte)((n >> 8) & 0xFF);
 					    	}
 					    	out.write(buffer, 0, n);
-					    	
 					    }
+					    
+					    buffer[0] = (byte)(n & 0xFF);
+					    buffer[1] = (byte)((n >> 8) & 0xFF);
+					    out.write(buffer, 0, 2);
+					    
 					    //out.flush();
 					    myFileB.close();
 					    cipherInputStream.close();
