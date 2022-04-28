@@ -590,18 +590,18 @@ public class myAutent {
 						BufferKey.read(KeyEncoded);
 						
 						PrivateKey userPrivateKey;
-						Cipher ca = null;
+						Cipher c = null;
 						try {
 							userPrivateKey = this.getUserPrivateKey(user, password);
 							
-							ca = Cipher.getInstance("RSA");
+							Cipher ca = Cipher.getInstance("RSA");
 						    ca.init(Cipher.UNWRAP_MODE, userPrivateKey);
 						    
 						    Key keyEncoded = ca.unwrap(KeyEncoded, "RSA", Cipher.SECRET_KEY);
 							
 						    SecretKeySpec KeySpec = new SecretKeySpec(keyEncoded.getEncoded(), "AES");
 						    
-						    Cipher c = Cipher.getInstance("AES");
+						    c = Cipher.getInstance("AES");
 							c.init(Cipher.DECRYPT_MODE, KeySpec);
 						} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
 								| CertificateException | NoSuchPaddingException | InvalidKeyException e1) {
@@ -614,7 +614,7 @@ public class myAutent {
 					    //out.writeObject(len);
 						
 					    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileOutDir));
-					    BufferedInputStream cipherInputStream =  new BufferedInputStream(new CipherInputStream(myFileB, ca));
+					    BufferedInputStream cipherInputStream =  new BufferedInputStream(new CipherInputStream(myFileB, c));
 					    
 					    byte[] buffer = new byte[1024];
 					    int n;
