@@ -491,8 +491,8 @@ public class myAutent {
 								System.out.print("Error: Encryption in server – "+ e.getMessage());
 							}
 						    
-							
-							byte[] signature = c2.doFinal(md.digest());
+							byte[] hash = md.digest();
+							byte[] signature = c2.doFinal(hash);
 							
 							// sends the signature to the client
 							out.writeObject(signature);
