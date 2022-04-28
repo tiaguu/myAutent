@@ -446,8 +446,6 @@ public class myAutent {
 						
 						try {
 							
-							System.out.println(password);
-							
 							// gets the user private key from the keystore
 							PrivateKey userPrivateKey = getUserPrivateKey(user, password);
 							
@@ -662,8 +660,6 @@ public class myAutent {
 				String[] filenames = (String[])in.readObject();
 				
 				for (String file : filenames) {			
-				
-					boolean verify = false;
 					
 					try {
 						
@@ -671,7 +667,7 @@ public class myAutent {
 					    s.initVerify(userPublicKey);
 						
 					    byte[] hash = (byte[]) in.readObject();
-						byte[] signature = ((byte[])in.readObject());
+						byte[] signature = (byte[])in.readObject();
 						
 						s.update(hash);
 					    
@@ -679,6 +675,8 @@ public class myAutent {
 							out.writeObject(true);
 							System.out.println("Verified "+file+"'s signature correctly");
 						} else {
+							System.out.println("aqui");
+							
 							out.writeObject(false);
 							System.out.println(file+"'s signature is not valid");
 						}
