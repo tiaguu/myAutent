@@ -418,12 +418,11 @@ public class myAutentClient {
 							byte[] sizeBuffer = new byte[2];
 							byte[] dataBuffer = new byte[65535];
 							while (true) {
-							    in.read(sizeBuffer, 0, 2);
-							    int r = ((sizeBuffer[0] & 0xFF) << 8) | (sizeBuffer[1] & 0xFF);
-							    System.out.println(r);
-							    if (r == 0) break;
-							    in.read(dataBuffer, 0, r);
-							    outFile.write(dataBuffer, 0, r);
+							  in.readNBytes(sizeBuffer, 0, 2);
+							  int r = ((sizeBuffer[0] & 0xFF) << 8) | (sizeBuffer[1] & 0xFF);
+							  if (r == 0) break;
+							  in.readNBytes(dataBuffer, 0, r);
+							  outFile.write(dataBuffer, 0, r);
 							}
 							
 							outFile.close();
