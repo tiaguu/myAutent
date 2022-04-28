@@ -268,6 +268,7 @@ public class myAutent {
 								verifySignatures(user, passwd, in, out);
 								break;
 						}
+						System.out.println("\n");
 					} catch (ClassNotFoundException e) {
 						System.out.println("Error: Listening to clients – " + e.getMessage());
 					} catch (EOFException e) {
