@@ -623,13 +623,20 @@ public class myAutent {
 						
 						byte[] hash = (byte[]) in.readObject();
 						
-						s.update(hash);
+						Cipher c = Cipher.getInstance("RSA"); 
+						c.init(Cipher.ENCRYPT_MODE, userPrivateKey);
+						
+						byte[] signature = c.doFinal(hash);
+						
+						//s.update(hash);
+						
+						//byte[] signature = s.sign();
 						
 						// sends the signature to the client
-						out.writeObject(s.sign());
+						out.writeObject(signature);
 						
 					} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
-							| CertificateException | InvalidKeyException | SignatureException e) {
+							| CertificateException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
 						System.out.print("Error: Auth in server – "+ e.getMessage());
 					}
 					
@@ -675,8 +682,6 @@ public class myAutent {
 							out.writeObject(true);
 							System.out.println("Verified "+file+"'s signature correctly");
 						} else {
-							System.out.println("aqui");
-							
 							out.writeObject(false);
 							System.out.println(file+"'s signature is not valid");
 						}
