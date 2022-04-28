@@ -670,6 +670,8 @@ public class myAutent {
 					
 				    byte[] hash = (byte[]) in.readObject();
 					byte[] signature = ((byte[])in.readObject());
+					
+					s.update(hash);
 				    
 					if (s.verify(signature)) {
 						out.writeObject(true);
