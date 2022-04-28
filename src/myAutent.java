@@ -611,7 +611,8 @@ public class myAutent {
 					    File myFile = new File(FileOutDir);
 					    
 					    //Long len = myFile.length();
-					    //out.writeObject(len);
+					    int len = c.getOutputSize((int) myFile.length());
+					    out.writeObject(len);
 						
 					    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileOutDir));
 					    BufferedInputStream cipherInputStream =  new BufferedInputStream(new CipherInputStream(myFileB, c));
