@@ -477,15 +477,17 @@ public class myAutent {
 							outFile.close();
 							outFileStream.close();
 							
+							byte[] signature = s.sign();
+							
 							// sends the signature to the client
-							out.writeObject(s.sign());
+							out.writeObject(signature);
 							
 							// saves the signature in the server's file system
 							String SignatureFileOutDir = System.getProperty("user.dir") + "/bin/files/" + user + "/" + file + ".signed." + user;
 							FileOutputStream outSignatureFileStream = new FileOutputStream(SignatureFileOutDir);
 							BufferedOutputStream outSignatureFile = new BufferedOutputStream(outSignatureFileStream);
 							
-							outSignatureFile.write(s.sign());
+							outSignatureFile.write(signature);
 							
 							outSignatureFile.close();
 							outSignatureFileStream.close();
