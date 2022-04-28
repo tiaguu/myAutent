@@ -52,6 +52,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -449,8 +450,17 @@ public class myAutent {
 							// gets the user private key from the keystore
 							PrivateKey userPrivateKey = getUserPrivateKey(user, password);
 							
+							// generates a random key to encrypt the file
+						    KeyGenerator kg = KeyGenerator.getInstance("AES");
+						    kg.init(128);
+						    SecretKey key = kg.generateKey();
+							
+							Cipher c = Cipher.getInstance("AES");
+						    c.init(Cipher.ENCRYPT_MODE, key);
+							
 							FileOutputStream outFileStream = new FileOutputStream(FileOutDir);
 							BufferedOutputStream outFile = new BufferedOutputStream(outFileStream);
+							CipherOutputStream outCipher = new CipherOutputStream(outFile, c);
 							
 							// initiates the signature with SHA256withRSA algorithm
 							Signature s = Signature.getInstance("SHA256withRSA");
@@ -470,14 +480,34 @@ public class myAutent {
 								md.update(buffer);
 								
 								// writes the buffer to the stream
-								outFile.write(buffer);
+								outCipher.write(buffer);
 								count += bytesRead;
 							}
 							
 							s.update(md.digest());
 							
+							outCipher.close();
 							outFile.close();
 							outFileStream.close();
+							
+							try {
+								String KeyFileOutDir = System.getProperty("user.dir") + "/bin/files/" + user + "/" + file + ".key";
+								BufferedOutputStream kos = new BufferedOutputStream(new FileOutputStream(KeyFileOutDir));
+								
+								Certificate userCertificate = this.getUserCertificate(user, password);
+								
+								Cipher ca = Cipher.getInstance("RSA");
+								
+								ca.init(Cipher.WRAP_MODE, userCertificate);
+							    byte[] keyEncoded = ca.wrap(key);
+							
+							    kos.write(keyEncoded);
+							    kos.close();
+							} catch (NoSuchPaddingException | IllegalBlockSizeException e) {
+								System.out.print("Error: Encryption in server – "+ e.getMessage());
+							}
+						    
+							
 							
 							byte[] signature = s.sign();
 							
@@ -500,7 +530,7 @@ public class myAutent {
 							
 							
 						} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
-								| CertificateException | InvalidKeyException | SignatureException e) {
+								| CertificateException | InvalidKeyException | SignatureException | NoSuchPaddingException e) {
 							System.out.print("Error: Auth in server – "+ e.getMessage());
 						}
 						
@@ -697,9 +727,6 @@ public class myAutent {
 			
 		}
 		
-		
-		// verifySignatures
-		
 		private PrivateKey getUserPrivateKey (String usernumber, String password) 
 				throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
 			
@@ -726,7 +753,20 @@ public class myAutent {
 	 	   	
 	 	   	return userPublicKey;
 			
-		}		
+		}
+		
+		private Certificate getUserCertificate (String usernumber, String password) 
+				throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
+			
+			String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+usernumber+"/"+usernumber+".keystore";
+			FileInputStream kfile = new FileInputStream(user_keystore_path);  //keystore
+	 	   	KeyStore kstore = KeyStore.getInstance("PKCS12");
+	 	   	kstore.load(kfile, password.toCharArray());           //password
+	 	   	
+	 	   	Certificate cert = kstore.getCertificate(usernumber);
+	 	   	
+	 	   	return cert;
+		}
 		
 	}
 	
@@ -867,9 +907,5 @@ public class myAutent {
 		}
 		
 	}
-	
-		
-	
-	
 	
 }
