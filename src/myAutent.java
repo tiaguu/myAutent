@@ -618,23 +618,17 @@ public class myAutent {
 					    BufferedInputStream cipherInputStream =  new BufferedInputStream(new CipherInputStream(myFileB, c));
 					    
 					    byte[] buffer = new byte[1026];
-					    int n;
-					    while ((n = cipherInputStream.read(buffer, 0, 1024)) > 0) {
-					    	if (n < 1024) {
-					    		buffer[0] = (byte)(n & 0xFF);
-							    buffer[1] = (byte)((n >> 8) & 0xFF);
-					    	} else {
-					    		buffer[0] = (byte)(n & 0xFF);
-							    buffer[1] = (byte)((n >> 8) & 0xFF);
-					    	}
-					    	out.write(buffer, 0, n);
+					    while (true) {
+					      int r = in.read(buffer, 2, 1024);
+					      if (r == -1) break;
+					      buffer[0] = (byte) (r >> 8);
+					      buffer[1] = (byte) r;
+					      out.write(buffer, 0, r + 2);
 					    }
-					    
-					    buffer[0] = (byte)(n & 0xFF);
-					    buffer[1] = (byte)((n >> 8) & 0xFF);
+					    buffer[0] = 0; buffer[1] = 0;
 					    out.write(buffer, 0, 2);
+					    out.flush();
 					    
-					    //out.flush();
 					    myFileB.close();
 					    cipherInputStream.close();
 					    
