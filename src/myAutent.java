@@ -617,9 +617,9 @@ public class myAutent {
 					    BufferedInputStream myFileB = new BufferedInputStream(new FileInputStream(FileOutDir));
 					    BufferedInputStream cipherInputStream =  new BufferedInputStream(new CipherInputStream(myFileB, c));
 					    
-					    byte[] buffer = new byte[65537];
+					    byte[] buffer = new byte[1026];
 					    while (true) {
-					      int r = cipherInputStream.read(buffer, 2, 65535);
+					      int r = cipherInputStream.read(buffer, 2, 1024);
 					      if (r == -1) break;
 					      buffer[0] = (byte) (r >> 8);
 					      buffer[1] = (byte) r;
