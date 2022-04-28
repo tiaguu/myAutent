@@ -198,9 +198,6 @@ public class myAutent {
 			System.out.println("Error: creating users file");
 		}
 		
-         
-		
-		
 	}
 	
 	//Threads utilizadas para comunicacao com os clientes
@@ -882,7 +879,8 @@ public class myAutent {
 			reader.close();
 		    
 			byte[] generated_bytes = mac.doFinal();
-			outMacFile.write(Base64.getEncoder().encodeToString(generated_bytes).getBytes());
+			//outMacFile.write(Base64.getEncoder().encodeToString(generated_bytes).getBytes());
+			outMacFile.write(generated_bytes);
 			
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
 			e.printStackTrace();
@@ -932,7 +930,8 @@ public class myAutent {
 			String inMacDir = System.getProperty("user.dir") + "/bin/files/users.mac";
 			BufferedInputStream inSignStream = new BufferedInputStream(new FileInputStream(inMacDir));
 			
-			if (Base64.getEncoder().encodeToString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8))) {
+			//if (Base64.getEncoder().encodeToString(toCompare).equals(new String(inSignStream.readAllBytes(), StandardCharsets.UTF_8))) {
+			if (Arrays.equals(toCompare, inSignStream.readAllBytes())) {
 				System.out.println("MAC correctly verified.");
 			} else {
 				System.out.println("MAC is incorrect, users file has been corrupted, shuting down.");
