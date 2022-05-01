@@ -584,6 +584,8 @@ public class myAutentClient {
 					String ExistsFileDir = System.getProperty("user.dir") + "/bin/files/" + file;
 					File file_exists = new File(ExistsFileDir);
 					
+					System.out.println("aqui");
+					
 					String ExistsSigantureDir = System.getProperty("user.dir") + "/bin/files/" + file + ".signed." + user;
 					
 					String directory = System.getProperty("user.dir") + "/bin/files/";
