@@ -753,7 +753,8 @@ public class myAutent {
 			String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+usernumber+"/"+usernumber+".keystore";
 			FileInputStream kfile = new FileInputStream(user_keystore_path);  //keystore
 	 	   	KeyStore kstore = KeyStore.getInstance("PKCS12");
-	 	   	kstore.load(kfile, password.toCharArray());           //password
+	 	   	// kstore.load(kfile, password.toCharArray());           //password
+	 	   	kstore.load(kfile, null);
 	 	   	
 	 	   	Certificate cert = kstore.getCertificate(usernumber);
 	 	   	PublicKey userPublicKey = cert.getPublicKey();
