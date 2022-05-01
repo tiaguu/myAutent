@@ -3,6 +3,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -584,6 +585,19 @@ public class myAutentClient {
 					File file_exists = new File(ExistsFileDir);
 					
 					String ExistsSigantureDir = System.getProperty("user.dir") + "/bin/files/" + file + ".signed." + user;
+					
+					String directory = System.getProperty("user.dir") + "/bin/files/";
+					FilenameFilter beginswith = new FilenameFilter() {
+						public boolean accept(File directory, String filename) {
+							return filename.startsWith(file + ".signed.");
+						}
+			        };
+
+			        File direct = new File(directory);
+			        File[] files = direct.listFiles(beginswith);
+			        
+			        System.out.println(files);
+					
 					File signature_exists = new File(ExistsSigantureDir);
 					
 					if (file_exists.exists()) {
@@ -625,14 +639,6 @@ public class myAutentClient {
 						
 						count += bytesRead;
 					}
-				    /*
-				    byte[] buffer = new byte[1024];
-				    int n;
-				    while ((n = myFileB.read(buffer, 0, 1024)) > 0) {
-				    	// gera a sintese do ficheiro
-				    	md.update(buffer);
-				    }
-				    */
 				    
 				    byte[] hash = md.digest();
 				    out.writeObject(hash);
@@ -648,8 +654,6 @@ public class myAutentClient {
 					
 					inSignStream.close();
 					
-					
-					// POR COMPLETAR – RECEBE VERIFICAÇÃO DA ASSINATURA
 					try {
 						boolean verifiedSignature = ((boolean)in.readObject());
 						

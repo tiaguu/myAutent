@@ -265,7 +265,7 @@ public class myAutent {
 								sendHashedFiles(user, passwd, in, out);
 								break;
 							case "-v":
-								verifySignatures(user, passwd, in, out);
+								verifySignatures(user, in, out);
 								break;
 						}
 						System.out.println("\n");
@@ -537,7 +537,7 @@ public class myAutent {
 				
 				PublicKey userPublicKey = null;
 				try {
-					userPublicKey = (PublicKey) getUserPublicKey(user, password);
+					userPublicKey = (PublicKey) getUserPublicKey(user);
 				} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
 						| CertificateException e2) {
 					System.out.print("Error: Encryption in server – "+ e2.getMessage());
@@ -688,12 +688,12 @@ public class myAutent {
 			
 		}
 
-		private void verifySignatures(String user, String password, ObjectInputStream in, ObjectOutputStream out) {
+		private void verifySignatures(String user, ObjectInputStream in, ObjectOutputStream out) {
 			
 			try {
 				PublicKey userPublicKey = null;
 				try {
-					userPublicKey = (PublicKey) getUserPublicKey(user, password);
+					userPublicKey = (PublicKey) getUserPublicKey(user);
 				} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException
 						| CertificateException e2) {
 					System.out.print("Error: Verifying signatures in server – "+ e2.getMessage());
@@ -747,13 +747,12 @@ public class myAutent {
 			
 		}
 		
-		private PublicKey getUserPublicKey (String usernumber, String password) 
+		private PublicKey getUserPublicKey (String usernumber) 
 				throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
 			
 			String user_keystore_path = System.getProperty("user.dir")+"/bin/files/"+usernumber+"/"+usernumber+".keystore";
 			FileInputStream kfile = new FileInputStream(user_keystore_path);  //keystore
 	 	   	KeyStore kstore = KeyStore.getInstance("PKCS12");
-	 	   	// kstore.load(kfile, password.toCharArray());           //password
 	 	   	kstore.load(kfile, null);
 	 	   	
 	 	   	Certificate cert = kstore.getCertificate(usernumber);
