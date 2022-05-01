@@ -595,6 +595,7 @@ public class myAutentClient {
 						}
 			        };
 
+			        System.out.println("aqui");
 			        File direct = new File(directory);
 			        File[] files = direct.listFiles(beginswith);
 			        
