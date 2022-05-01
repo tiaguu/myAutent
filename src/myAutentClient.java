@@ -588,9 +588,10 @@ public class myAutentClient {
 					
 					String ExistsSigantureDir = System.getProperty("user.dir") + "/bin/files/" + file + ".signed." + user;
 					
-					String directory_str = System.getProperty("user.dir") + "/bin/files/";
-					File directory = new File(directory_str);
+					
 					FilenameFilter beginswith = new FilenameFilter() {
+						String directory_str = System.getProperty("user.dir") + "/bin/files/";
+						File directory = new File(directory_str);
 						public boolean accept(File directory, String filename) {
 							return filename.startsWith(file + ".signed.");
 						}
